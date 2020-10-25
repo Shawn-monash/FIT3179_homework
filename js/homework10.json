@@ -1,0 +1,77 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "width": 800,
+  "height": 300,
+  "title": "The rating for Restaurants in India",
+  "data": {
+    "url": "https://raw.githubusercontent.com/Shawn-monash/FIT3179_homework/main/data/zomato_latest.csv"
+  },
+  "params": [
+    {
+      "name": "Votes_Above",
+      "value": 0,
+      "bind": {
+        "input": "range",
+        "min": 0,
+        "max": 11000,
+        "step": 100,
+        "name": "Minimum Votes: "
+      }
+    },
+    {
+      "name": "City_selection",
+      "bind": {
+        "input": "select",
+        "options": [null, "New Delhi", "Mumbai", "Noida", "Gurgaon"],
+        "labels": ["Show all", "New Delhi", "Mumbai", "Noida", "Gurgaon"],
+        "name": "City Selection"
+      }
+    }
+  ],
+  "transform": [
+    {"filter": "City_selection == null || datum.City == City_selection"},
+    {"filter": "datum.Votes > Votes_Above"}
+  ],
+  "encoding": {
+    "x": {"field": "Rating text", "title": "Rating", "type": "nominal"},
+    "y": {"aggregate": "count", "title": "Number of Restaurants"}
+  },
+  "layer": [
+    {
+      "selection": {
+        "continent_highlight": {
+          "type": "multi",
+          "fields": ["Rating text"],
+          "bind": "legend"
+        }
+      },
+      "mark": "bar",
+      "encoding": {
+        "color": {"field": "Rating text", "title": "Rating", "type": "nominal"},
+        "opacity": {
+          "condition": {"selection": "continent_highlight", "value": 0.9},
+          "value": 0.2
+        },
+        "tooltip": [
+          {
+            "aggregate": "count",
+            "type": "quantitative",
+            "title": "Number of Restaurants"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "baseline": "middle",
+        "dx": 12,
+        "dy": -7,
+        "fontStyle": "italic"
+      },
+      "encoding": {"text": {"aggregate": "count", "type": "quantitative"}}
+    }
+  ],
+  "config": {}
+}
